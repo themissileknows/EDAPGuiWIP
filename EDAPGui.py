@@ -78,7 +78,7 @@ class APGui():
         root.resizable(False, False)
 
         self.tooltips = {
-            'FSD Route Assist': "Will execute your route. \nAt each jump the sequence will perform some fuel scooping.",
+            'FSD Route Assist': "Will execute you. \nAt each jump the sequence will perform some fuel scooping.",
             'Supercruise Assist': "Will keep your ship pointed to target, \nyou target can only be a station for the autodocking to work.",
             'Waypoint Assist': "When selected, will prompt for the waypoint file. \nThe waypoint file contains System names that \nwill be entered into Galaxy Map and route plotted.",
             'Robigo Assist': "",
