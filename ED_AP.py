@@ -148,6 +148,7 @@ class EDAutopilot:
         self.afk_combat_assist_enabled = False
         self.waypoint_assist_enabled = False
         self.robigo_assist_enabled = False
+        self.tbfc_assist_enabled = False
         self.single_waypoint_enabled = False
 
         # Create instance of each of the needed Classes
@@ -279,6 +280,8 @@ class EDAutopilot:
                 ap_mode = "Waypoint Assist"
             elif self.afk_combat_assist_enabled == True:
                 ap_mode = "AFK Combat Assist"
+            elif self.tbfc_assist_enabled == True:
+                ap_mode = "TBFC Assist"
                 
             ship_state = self.jn.ship_state()['status']
             if ship_state == None:
@@ -1968,6 +1971,10 @@ class EDAutopilot:
 
         self.vce.say("Terminating AFK Combat Assist")
 
+    def tbfc_assist(self, scr_reg):
+        # TODO continue here
+        sleep(4)
+
     def single_waypoint_assist(self):
         """ Travel to a system or station or both."""
         if self._single_waypoint_system == "" and self._single_waypoint_station == "":
@@ -2037,6 +2044,11 @@ class EDAutopilot:
         if enable == False and self.afk_combat_assist_enabled == True:
             self.ctype_async_raise(self.ap_thread, EDAP_Interrupt)
         self.afk_combat_assist_enabled = enable
+
+    def set_tbfc_assist(self, enable=True):
+        if enable == False and self.tbfc_assist_enabled == True:
+            self.ctype_async_raise(self.ap_thread, EDAP_Interrupt)
+        self.tbfc_assist_enabled = enable
 
     def set_single_waypoint_assist(self, system: str, station: str, enable=True):
         if enable == False and self.single_waypoint_enabled == True:
@@ -2212,6 +2224,24 @@ class EDAutopilot:
                     logger.debug("Stopping afk_combat")
                 self.afk_combat_assist_enabled = False
                 self.ap_ckb('afk_stop')
+                self.update_overlay()
+
+            elif self.tbfc_assist_enabled == True:
+                logger.debug("Running TBFC")
+                self.set_focus_elite_window()
+                self.update_overlay()
+                try:
+                    self.update_ap_status("SC to Target")
+                    self.tbfc_assist(self.scrReg)
+                except EDAP_Interrupt:
+                    logger.debug("Caught stop exception")
+                except Exception as e:
+                    print("Trapped generic:"+str(e))
+                    traceback.print_exc()
+
+                logger.debug("Completed sc_assist")
+                self.sc_assist_enabled = False
+                self.ap_ckb('sc_stop')
                 self.update_overlay()
 
             elif self.single_waypoint_enabled:
