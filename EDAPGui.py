@@ -81,6 +81,7 @@ class APGui():
             'FSD Route Assist': "Will execute you. \nAt each jump the sequence will perform some fuel scooping.",
             'Supercruise Assist': "Will keep your ship pointed to target, \nyou target can only be a station for the autodocking to work.",
             'Waypoint Assist': "When selected, will prompt for the waypoint file. \nThe waypoint file contains System names that \nwill be entered into Galaxy Map and route plotted.",
+            'TBFC Assist': "Will buy commodities at a Trailblazer Megaship and deliver them to your Fleet Carrier.", # rn only Trailblazer Song
             'Robigo Assist': "",
             'ELW Scanner': "Will perform FSS scans while FSD Assist is traveling between stars. \nIf the FSS shows a signal in the region of Earth, \nWater or Ammonia type worlds, it will announce that discovery.",
             'AFK Combat Assist': "Used with a AFK Combat ship in a Rez Zone.",
@@ -125,6 +126,7 @@ class APGui():
         self.FSD_A_running = False
         self.SC_A_running = False
         self.WP_A_running = False
+        self.TBFC_A_running = False
         self.RO_A_running = False
         self.SWP_A_running = False
 
@@ -247,6 +249,14 @@ class APGui():
             logger.debug("Detected 'single_waypoint_stop' callback msg")
             self.checkboxvar['Single Waypoint Assist'].set(0)
             self.check_cb('Single Waypoint Assist')
+        elif msg == 'TBFC_stop':
+            logger.debug("Detected 'TBFC_stop' callback msg")
+            self.checkboxvar['TBFC Assist'].set(0)
+            self.check_cb('TBFC Assist')
+        elif msg == 'TBFC_start':
+            logger.debug("Detected 'TBFC_start' callback msg")
+            self.checkboxvar['TBFC Assist'].set(1)
+            self.check_cb('TBFC Assist')
 
         elif msg == 'stop_all_assists':
             logger.debug("Detected 'stop_all_assists' callback msg")
@@ -268,6 +278,9 @@ class APGui():
 
             self.checkboxvar['Single Waypoint Assist'].set(0)
             self.check_cb('Single Waypoint Assist')
+
+            self.checkboxvar['TBFC Assist'].set(0)
+            self.check_cb('TBFC Assist')
 
         elif msg == 'jumpcount':
             self.update_jumpcount(body)
@@ -400,6 +413,22 @@ class APGui():
         self.SWP_A_running = False
         self.log_msg("Single Waypoint Assist stop")
         self.ed_ap.vce.say("Single Waypoint Assist Off")
+        self.update_statusline("Idle")
+
+    def start_tbfc(self):
+        logger.debug("Entered: start_tbfc")
+        self.ed_ap.set_tbfc_assist(True)
+        self.TBFC_A_running = True
+        self.log_msg("TBFC Assist start")
+        self.ed_ap.vce.say("TrailBlazer to Fleet Carrier Assist start")
+        self.update_statusline("Idle")
+
+    def stop_tbfc(self):
+        logger.debug("Entered: stop_tbfc")
+        self.ed_ap.set_tbfc_assist(False)
+        self.TBFC_A_running = False
+        self.log_msg("TBFC Assist stop")
+        self.ed_ap.vce.say("TrailBlazer to Fleet Carrier Assist stop")
         self.update_statusline("Idle")
 
     def about(self):
@@ -553,6 +582,7 @@ class APGui():
                 self.lab_ck['Supercruise Assist'].config(state='disabled')
                 self.lab_ck['Waypoint Assist'].config(state='disabled')
                 self.lab_ck['Robigo Assist'].config(state='disabled')
+                self.lab_ck['TBFC Assist'].config(state='disabled')
                 self.start_fsd()
 
             elif self.checkboxvar['FSD Route Assist'].get() == 0 and self.FSD_A_running == True:
@@ -561,6 +591,7 @@ class APGui():
                 self.lab_ck['AFK Combat Assist'].config(state='active')
                 self.lab_ck['Waypoint Assist'].config(state='active')
                 self.lab_ck['Robigo Assist'].config(state='active')
+                self.lab_ck['TBFC Assist'].config(state='active')
 
         if field == 'Supercruise Assist':
             if self.checkboxvar['Supercruise Assist'].get() == 1 and self.SC_A_running == False:
@@ -568,6 +599,7 @@ class APGui():
                 self.lab_ck['AFK Combat Assist'].config(state='disabled')
                 self.lab_ck['Waypoint Assist'].config(state='disabled')
                 self.lab_ck['Robigo Assist'].config(state='disabled')
+                self.lab_ck['TBFC Assist'].config(state='disabled')
                 self.start_sc()
 
             elif self.checkboxvar['Supercruise Assist'].get() == 0 and self.SC_A_running == True:
@@ -576,6 +608,7 @@ class APGui():
                 self.lab_ck['AFK Combat Assist'].config(state='active')
                 self.lab_ck['Waypoint Assist'].config(state='active')
                 self.lab_ck['Robigo Assist'].config(state='active')
+                self.lab_ck['TBFC Assist'].config(state='active')
 
         if field == 'Waypoint Assist':
             if self.checkboxvar['Waypoint Assist'].get() == 1 and self.WP_A_running == False:
@@ -583,6 +616,7 @@ class APGui():
                 self.lab_ck['Supercruise Assist'].config(state='disabled')
                 self.lab_ck['AFK Combat Assist'].config(state='disabled')
                 self.lab_ck['Robigo Assist'].config(state='disabled')
+                self.lab_ck['TBFC Assist'].config(state='disabled')
                 self.start_waypoint()
 
             elif self.checkboxvar['Waypoint Assist'].get() == 0 and self.WP_A_running == True:
@@ -591,6 +625,7 @@ class APGui():
                 self.lab_ck['Supercruise Assist'].config(state='active')
                 self.lab_ck['AFK Combat Assist'].config(state='active')
                 self.lab_ck['Robigo Assist'].config(state='active')
+                self.lab_ck['TBFC Assist'].config(state='active')
 
         if field == 'Robigo Assist':
             if self.checkboxvar['Robigo Assist'].get() == 1 and self.RO_A_running == False:
@@ -598,6 +633,7 @@ class APGui():
                 self.lab_ck['Supercruise Assist'].config(state='disabled')
                 self.lab_ck['AFK Combat Assist'].config(state='disabled')
                 self.lab_ck['Waypoint Assist'].config(state='disabled')
+                self.lab_ck['TBFC Assist'].config(state='disabled')
                 self.start_robigo()
 
             elif self.checkboxvar['Robigo Assist'].get() == 0 and self.RO_A_running == True:
@@ -606,6 +642,7 @@ class APGui():
                 self.lab_ck['Supercruise Assist'].config(state='active')
                 self.lab_ck['AFK Combat Assist'].config(state='active')
                 self.lab_ck['Waypoint Assist'].config(state='active')
+                self.lab_ck['TBFC Assist'].config(state='active')
 
         if field == 'AFK Combat Assist':
             if self.checkboxvar['AFK Combat Assist'].get() == 1:
@@ -615,12 +652,31 @@ class APGui():
                 self.lab_ck['Supercruise Assist'].config(state='disabled')
                 self.lab_ck['Waypoint Assist'].config(state='disabled')
                 self.lab_ck['Robigo Assist'].config(state='disabled')
+                self.lab_ck['TBFC Assist'].config(state='disabled')
 
             elif self.checkboxvar['AFK Combat Assist'].get() == 0:
                 self.ed_ap.set_afk_combat_assist(False)
                 self.log_msg("AFK Combat Assist stop")
                 self.lab_ck['FSD Route Assist'].config(state='active')
                 self.lab_ck['Supercruise Assist'].config(state='active')
+                self.lab_ck['Waypoint Assist'].config(state='active')
+                self.lab_ck['Robigo Assist'].config(state='active')
+                self.lab_ck['TBFC Assist'].config(state='active')
+
+        if field == 'TBFC Assist':
+            if self.checkboxvar['TBFC Assist'].get() == 1 and self.TBFC_A_running == False:
+                self.lab_ck['FSD Route Assist'].config(state='disabled')
+                self.lab_ck['Supercruise Assist'].config(state='disabled')
+                self.lab_ck['AFK Combat Assist'].config(state='disabled')
+                self.lab_ck['Waypoint Assist'].config(state='disabled')
+                self.lab_ck['Robigo Assist'].config(state='disabled')
+                self.start_tbfc()
+
+            elif self.checkboxvar['TBFC Assist'].get() == 0 and self.TBFC_A_running == True:
+                self.stop_tbfc()
+                self.lab_ck['FSD Route Assist'].config(state='active')
+                self.lab_ck['Supercruise Assist'].config(state='active')
+                self.lab_ck['AFK Combat Assist'].config(state='active')
                 self.lab_ck['Waypoint Assist'].config(state='active')
                 self.lab_ck['Robigo Assist'].config(state='active')
 
@@ -707,7 +763,7 @@ class APGui():
 
     def gui_gen(self, win):
 
-        modes_check_fields = ('FSD Route Assist', 'Supercruise Assist', 'Waypoint Assist', 'Robigo Assist', 'AFK Combat Assist')
+        modes_check_fields = ('FSD Route Assist', 'Supercruise Assist', 'Waypoint Assist', 'Robigo Assist', 'AFK Combat Assist', 'TBFC Assist')
         ship_entry_fields = ('RollRate', 'PitchRate', 'YawRate', 'SunPitchUp+Time')
         autopilot_entry_fields = ('Sun Bright Threshold', 'Nav Align Tries', 'Jump Tries', 'Wait For Autodock')
         buttons_entry_fields = ('Start FSD', 'Start SC', 'Start Robigo', 'Stop All')
