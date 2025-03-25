@@ -1,3 +1,4 @@
+import random
 import sys
 import os
 import threading
@@ -70,7 +71,8 @@ def hyperlink_callback(url):
 class APGui():
     def __init__(self, root):
         self.root = root
-        root.title("EDAutopilot " + EDAP_VERSION)
+        # assigns the process a name consisting of 20 random digits
+        root.title(random.randint(10000000000000000000,99999999999999999999))
         # root.overrideredirect(True)
         # root.geometry("400x550")
         # root.configure(bg="blue")
