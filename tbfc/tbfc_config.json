@@ -1,0 +1,4 @@
+{
+"BUY":    {"Megaship": true, "System": "Orgen", "Completed": false},
+"SELL":   {"Fleetcarrier": false, "System": "Orgen", "Completed": false}
+}

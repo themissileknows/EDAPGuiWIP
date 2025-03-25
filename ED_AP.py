@@ -2231,7 +2231,6 @@ class EDAutopilot:
                 self.set_focus_elite_window()
                 self.update_overlay()
                 try:
-                    self.update_ap_status("SC to Target")
                     self.tbfc_assist(self.scrReg)
                 except EDAP_Interrupt:
                     logger.debug("Caught stop exception")
@@ -2239,9 +2238,9 @@ class EDAutopilot:
                     print("Trapped generic:"+str(e))
                     traceback.print_exc()
 
-                logger.debug("Completed sc_assist")
-                self.sc_assist_enabled = False
-                self.ap_ckb('sc_stop')
+                logger.debug("Completed TBFC")
+                self.tbfc_assist_enabled = False
+                self.ap_ckb('tbfc_stop')
                 self.update_overlay()
 
             elif self.single_waypoint_enabled:
@@ -2363,6 +2362,7 @@ class EDAutopilot:
 # This main is for testing purposes.
 #
 def main():
+    """
     #handle = win32gui.FindWindow(0, "Elite - Dangerous (CLIENT)")
     #if handle != None:
     #    win32gui.SetForegroundWindow(handle)  # put the window in foreground
@@ -2389,5 +2389,18 @@ def main():
 
     ed_ap.overlay.overlay_quit()
 
+
+def test():
+    var = "selected_location"
+    screen = "Screen data here"  # Replace with real data
+    templ = "Template data here"  # Replace with real data
+    instance = Screen_Regions(screen, templ)
+    dat = instance.reg[var]
+    print(dat)
+#    OCR.text = "Hi"
+#    OCR.region = srg
+#    OCR.is_text_in_region(OCR.text, OCR.region)
+
 if __name__ == "__main__":
-    main()
+    test()
+"""
